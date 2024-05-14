@@ -1,0 +1,6 @@
+- React.js and Tailwind CSS utilized for frontend development.
+- Backend powered by Express.js, PostgreSQL, and Hono.
+- User authentication with sign-in and sign-up features.
+- Ability for users to create and publish blog posts.
+- Seamless browsing experience for users to explore others' blog posts.
+- Leveraging Cloudflare Workers for enhanced performance and reliability.
