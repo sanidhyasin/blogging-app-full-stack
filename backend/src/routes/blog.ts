@@ -97,11 +97,48 @@ blogRouter.get("/bulk", async (c) => {
     datasourceUrl: c.env?.DATABASE_URL,
   }).$extends(withAccelerate());
 
-  const blogs = await prisma.blog.findMany();
+  const blogs = await prisma.blog.findMany({
+    select: {
+      content: true,
+      title: true,
+      id: true,
+      author: {
+        select: {
+          name: true,
+          id: true,
+        },
+      },
+    },
+  });
 
   return c.json({
     blogs,
   });
+});
+
+blogRouter.get("/userinfo", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env?.DATABASE_URL,
+  }).$extends(withAccelerate());
+  const authorId = c.get("userId");
+  try {
+    const author = await prisma.user.findUnique({
+      where: {
+        id: authorId,
+      },
+      select: {
+        name: true,
+      },
+    });
+    return c.json({
+      author,
+    });
+  } catch (e) {
+    c.status(411);
+    return c.json({
+      message: "error while fetching the author details",
+    });
+  }
 });
 
 blogRouter.get("/:id", async (c) => {
@@ -113,6 +150,16 @@ blogRouter.get("/:id", async (c) => {
     const blog = await prisma.blog.findUnique({
       where: {
         id: id,
+      },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        author: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
     return c.json({
